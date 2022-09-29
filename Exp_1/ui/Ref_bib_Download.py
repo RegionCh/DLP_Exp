@@ -61,3 +61,4 @@ class Ui_Mainwindow(object):
         self.label_2.setText(_translate("Mainwindow", "Reference："))
         self.label_3.setText(_translate("Mainwindow", "bib文件路径"))
         self.label_4.setText(_translate("Mainwindow", "Author：Region"))
+        self.pushButton.clicked.connect(Mainwindow.Path)
