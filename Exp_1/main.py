@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets
 import sys
 
 
-# 调用show
+# Call show
 app = QtWidgets.QApplication(sys.argv)
 myshow = mywindow()
 myshow.show()
