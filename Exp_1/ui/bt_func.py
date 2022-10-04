@@ -6,13 +6,13 @@ import os
 import fitz
 
 
-# 这个类继承界面UI类
+# This class inherits the UI class of the interface
 class mywindow(QtWidgets.QWidget, Ui_Mainwindow):
     def __init__(self):
         super(mywindow, self).__init__()
         self.setupUi(self)
 
-    # 定义槽函数
+    # Define the slot function
     def Path(self):
         # read the file and create the filedir
         FilePath = self.lineEdit.text()
@@ -28,29 +28,27 @@ class mywindow(QtWidgets.QWidget, Ui_Mainwindow):
         references_list = GetRefTxt(ref_list)
         L = len(references_list)
         name_list = []
-        # 将ref_list中元素逐个处理后加入name_list
+        # Elements in the ref_list are processed then added to the name_list
         for i in range(L):
-            # 1.删除作者名和回车
+            # Parse and display references in the line widget
             if (references_list[i][0] != "["):
                 continue
             self.listWidget.addItem(references_list[i].replace("\n", " "))
-            # High fidelity video prediction with large stochastic recurrent neural networks
-            # High ﬁdelity video prediction with large stochastic recurrent neural networks
+            # 1.Delete the author name and carriage return
             head = references_list[i].find('“')
             tail = references_list[i].find('”', head + 1)
             papername = references_list[i][head + 1:tail - 1]
-            # papername = papername.replace("-\n", "")
-            # papername = papername.replace("\n", " ")
+            # there happens some mistakes when pdf was parsed
             papername = papername.replace("ﬁ", "fi")
             papername = papername.replace("ﬂ", "fl")
             papername = papername.replace("ﬃ", "ffi")
             papername = papername.replace("ﬀ", "ff")
 
-            # 2.把空格换成%20用来搜索
+            # 2.Replace the space with ’%20‘ for searching
             papername = papername.replace(" ", "%20")
             if papername.find("-\n") == -1:
                 name_list.append(papername.replace("\n"," "))
-            else:
+            else: # Process some special cases
                 papername1 = papername.replace("-\n", '-')
                 papername1 = papername1.replace("\n", ' ')
                 papername2 = papername.replace("-\n", '')
@@ -93,7 +91,7 @@ class mywindow(QtWidgets.QWidget, Ui_Mainwindow):
         print("Done")
 
 
-# 获取从references开始及之后的页面内容
+# Get page content starting with 'references' and beyond
 def GetRefPages(pdfname):
     pdf = fitz.open(pdfname)
     pagenum = len(pdf)
@@ -112,13 +110,12 @@ def GetRefPages(pdfname):
                     refcontent = refpage.get_text('blocks')
                     for n, refc in enumerate(refcontent):
                         txtblocks = list(refc[4:-2])
-                        # 将文献名转换成可供搜索的形式：把空格换成%20，去掉\n
                         ref_list.extend(txtblocks)
     # print(''.join(ref_list))
     return ref_list
 
 
-# 获取从references之后的文本内容
+# Gets the text content after 'references'
 def GetRefTxt(ref_list):
     refnum = 0
     for nref, ref in enumerate(ref_list):
