@@ -23,7 +23,7 @@ class mywindow(QtWidgets.QWidget, Ui_Mainwindow):
         folder = now_loc + '\\' + TargetPaper
         if not os.path.isdir(folder):
             os.mkdir(folder)
-
+        self.textEdit.setText(folder)
         ref_list = GetRefPages(FilePath)
         references_list = GetRefTxt(ref_list)
         L = len(references_list)
@@ -47,12 +47,12 @@ class mywindow(QtWidgets.QWidget, Ui_Mainwindow):
             # 2.Replace the space with ’%20‘ for searching
             papername = papername.replace(" ", "%20")
             if papername.find("-\n") == -1:
-                name_list.append(papername.replace("\n"," "))
+                name_list.append(papername.replace("\n","%20"))
             else: # Process some special cases
                 papername1 = papername.replace("-\n", '-')
-                papername1 = papername1.replace("\n", ' ')
+                papername1 = papername1.replace("\n", '%20')
                 papername2 = papername.replace("-\n", '')
-                papername2 = papername2.replace("\n", ' ')
+                papername2 = papername2.replace("\n", '%20')
                 name_list.append(papername1)
                 name_list.append(papername2)
         # download .bib file
@@ -63,6 +63,10 @@ class mywindow(QtWidgets.QWidget, Ui_Mainwindow):
             search_url = "https://dblp.org/search?q=" + papername
             r = requests.get(search_url)
             # print(r.text)
+            if r.text.find("https://dblp.org/img/download.dark.hollow.16x16.png") == -1:
+                print(str(j) + ".Not Found:  " + papername.replace("%20", " "))
+                j = j + 1
+                continue
             b_loc = r.text.find("https://dblp.org/img/download.dark.hollow.16x16.png") - 120
             b_loc = r.text.find("https", b_loc)
             e_loc = r.text.find('"', b_loc)
