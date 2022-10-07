@@ -90,7 +90,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>560</y>
+      <y>530</y>
       <width>111</width>
       <height>16</height>
      </rect>
@@ -109,6 +109,28 @@
      </rect>
     </property>
    </widget>
+   <widget class="QListView" name="listView">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>-40</y>
+      <width>811</width>
+      <height>651</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-image: url(:/background.jpg);</string>
+    </property>
+   </widget>
+   <zorder>listView</zorder>
+   <zorder>lineEdit</zorder>
+   <zorder>label</zorder>
+   <zorder>pushButton</zorder>
+   <zorder>label_2</zorder>
+   <zorder>textEdit</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_4</zorder>
+   <zorder>listWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -122,6 +144,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="background.qrc"/>
+ </resources>
  <connections/>
 </ui>
