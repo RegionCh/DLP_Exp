@@ -7,6 +7,6 @@
 3.命令行中会显示导入成功的bib文件的路径并计数（也会为失败的单独计数）
 ##### 注：失败数+成功数会显著大于总参考文献数，这是因为程序中作了一些特殊处理。
 ##效果图  
-![window.JPG](https://s2.loli.net/2022/10/04/jxv1SgpKWVafM3l.jpg)    
+![11.png](https://s2.loli.net/2022/10/07/FX3QrPYD1gMIHUl.png)  
   
 ![window.JPG](https://s2.loli.net/2022/10/04/qSKRnvr45D3U8eb.jpg)
