@@ -86,15 +86,20 @@ class BasicBlock(nn.Module):
         self.downsample = downsample
         self.stride = stride
 
+        # Adding a dropout
+        self.dropout = nn.Dropout(p=0.5) 
+
     def forward(self, x: Tensor) -> Tensor:
         identity = x
 
         out = self.conv1(x)
         out = self.bn1(out)
+        out = self.dropout(out)
         out = self.relu(out)
 
         out = self.conv2(out)
         out = self.bn2(out)
+        out = self.dropout(out)
 
         if self.downsample is not None:
             identity = self.downsample(x)
