@@ -34,7 +34,7 @@ parser.add_argument('data', metavar='DIR', nargs='?', default='tiny_imagenet_200
 parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',)
 parser.add_argument('-j', '--workers', default=12, type=int, metavar='N',
                     help='number of data loading workers (default: 12)')
-parser.add_argument('--epochs', default=15, type=int, metavar='N',
+parser.add_argument('--epochs', default=40, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -79,7 +79,7 @@ parser.add_argument('--dummy', action='store_true', help="use fake data to bench
 
 best_acc1 = 0
 
-writer = SummaryWriter('Original')
+writer = SummaryWriter('dropout_after_eachEpoch')
 
 def main():
     args = parser.parse_args()
