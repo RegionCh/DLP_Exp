@@ -79,7 +79,7 @@ parser.add_argument('--dummy', action='store_true', help="use fake data to bench
 
 best_acc1 = 0
 
-writer = SummaryWriter('dropout_after_eachEpoch')
+writer = SummaryWriter('dropout_before_eachBN')
 
 def main():
     args = parser.parse_args()
