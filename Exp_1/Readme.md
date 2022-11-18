@@ -1,12 +1,12 @@
-# 解析文献的所有参考文献并下载相应的bib文件
-## 使用方法
-在pdf路径栏中输入本地文献pdf路径，点击确认即可
-## 效果
-1.解析pdf中所有参考文献显示在窗口的Reference栏中  
-2.在main()函数所在文件夹下新建与pdf文件名相同名字的文件夹，在这个文件夹中下载所有参考文献的bib文件  
-3.命令行中会显示导入成功的bib文件的路径并计数（也会为失败的单独计数）
-##### 注：失败数+成功数会显著大于总参考文献数，这是因为程序中作了一些特殊处理。
-##效果图  
+# Analyze all references of the paper and download the corresponding bib file   
+## Usage    
+Enter the local pdf path of paper, and click '确认'   
+## Effect    
+1. All references in the parsing pdf are showed in the Reference column of the window   
+2. Create a folder with the same name as the pdf file in the folder where the main.py is located, and download the bib files of all references in this folder   
+3. The command line will show the path of the successfully imported bib file and count it (also a separate count of failures)    
+##### Note: The total number of failures and successes is usually significantly greater than the total number of references because of some special treatment in the program.    
+## Example    
 ![11.png](https://s2.loli.net/2022/10/07/FX3QrPYD1gMIHUl.png)  
   
 ![window.JPG](https://s2.loli.net/2022/10/04/qSKRnvr45D3U8eb.jpg)
