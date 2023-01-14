@@ -2,7 +2,7 @@ import argparse
 import os
 from collections import OrderedDict
 from glob import glob
-
+import zipfile
 import pandas as pd
 import torch
 import torch.backends.cudnn as cudnn
@@ -58,7 +58,7 @@ def parse_args():
                         ' (default: BCEDiceLoss)')
     
     # dataset
-    parser.add_argument('--dataset', default='benign',
+    parser.add_argument('--dataset', default='ALL',
                         help='dataset name')
     parser.add_argument('--img_ext', default='.png',
                         help='image file extension')
@@ -207,6 +207,10 @@ def main():
 
     with open('models/%s/config.yml' % config['name'], 'w') as f:
         yaml.dump(config, f)
+
+    zip_file = zipfile.ZipFile('input.zip')
+    zip_extract = zip_file.extractall()
+    zip_extract.close()
 
     # define loss function (criterion)
     if config['loss'] == 'BCEWithLogitsLoss':
