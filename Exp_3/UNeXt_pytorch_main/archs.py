@@ -21,6 +21,9 @@ from abc import ABCMeta, abstractmethod
 from mmcv.cnn import ConvModule
 import pdb
 
+# AS_MLP
+import as_mlp
+import shift_cuda
 
 
 def conv1x1(in_planes: int, out_planes: int, stride: int = 1) -> nn.Conv2d:
@@ -29,7 +32,7 @@ def conv1x1(in_planes: int, out_planes: int, stride: int = 1) -> nn.Conv2d:
 
 
 def shift(dim):
-            x_shift = [ torch.roll(x_c, shift, dim) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
+            x_shift = [ torch.roll(x_c, (shift,shift), (2,3)) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
             x_cat = torch.cat(x_shift, 1)
             x_cat = torch.narrow(x_cat, 2, self.pad, H)
             x_cat = torch.narrow(x_cat, 3, self.pad, W)
@@ -82,10 +85,12 @@ class shiftmlp(nn.Module):
         xn = x.transpose(1, 2).view(B, C, H, W).contiguous()
         xn = F.pad(xn, (self.pad, self.pad, self.pad, self.pad) , "constant", 0)
         xs = torch.chunk(xn, self.shift_size, 1)
-        x_shift = [torch.roll(x_c, shift, 2) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
+        x_shift = [torch.roll(x_c, (shift,shift), (2,3)) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
         x_cat = torch.cat(x_shift, 1)
         x_cat = torch.narrow(x_cat, 2, self.pad, H)
         x_s = torch.narrow(x_cat, 3, self.pad, W)
+        
+        # Also shifted on the other dimension
 
 
         x_s = x_s.reshape(B,C,H*W).contiguous()
@@ -101,7 +106,7 @@ class shiftmlp(nn.Module):
         xn = x.transpose(1, 2).view(B, C, H, W).contiguous()
         xn = F.pad(xn, (self.pad, self.pad, self.pad, self.pad) , "constant", 0)
         xs = torch.chunk(xn, self.shift_size, 1)
-        x_shift = [torch.roll(x_c, shift, 3) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
+        x_shift = [torch.roll(x_c, (shift,shift), (2,3)) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
         x_cat = torch.cat(x_shift, 1)
         x_cat = torch.narrow(x_cat, 2, self.pad, H)
         x_s = torch.narrow(x_cat, 3, self.pad, W)
@@ -111,6 +116,8 @@ class shiftmlp(nn.Module):
         x = self.fc2(x_shift_c)
         x = self.drop(x)
         return x
+
+
 
 
 
@@ -195,9 +202,9 @@ class OverlapPatchEmbed(nn.Module):
                 m.bias.data.zero_()
 
     def forward(self, x):
-        x = self.proj(x)
+        x = self.proj(x)  # Conv
         _, _, H, W = x.shape
-        x = x.flatten(2).transpose(1, 2)
+        x = x.flatten(2).transpose(1, 2) # 把后面两维展成一维，再做转置
         x = self.norm(x)
 
         return x, H, W
@@ -207,7 +214,7 @@ class UNext(nn.Module):
 
     ## Conv 3 + MLP 2 + shifted MLP
     
-    def __init__(self,  num_classes, input_channels=3, deep_supervision=False,img_size=224, patch_size=16, in_chans=3,  embed_dims=[ 128, 160, 256],
+    def __init__(self,  num_classes, input_channels=3, deep_supervision=False,img_size=224, patch_size=16, in_chans=3,      embed_dims=[ 128, 160, 256],
                  num_heads=[1, 2, 4, 8], mlp_ratios=[4, 4, 4, 4], qkv_bias=False, qk_scale=None, drop_rate=0.,
                  attn_drop_rate=0., drop_path_rate=0., norm_layer=nn.LayerNorm,
                  depths=[1, 1, 1], sr_ratios=[8, 4, 2, 1], **kwargs):
@@ -271,7 +278,7 @@ class UNext(nn.Module):
 
     def forward(self, x):
         
-        B = x.shape[0]
+        B = x.shape[0] # batch size
         ### Encoder
         ### Conv Stage
 
