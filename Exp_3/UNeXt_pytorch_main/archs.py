@@ -35,7 +35,7 @@ def shift(dim):
             return x_cat
 
 class shiftmlp(nn.Module):
-    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0., shift_size=2):
+    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0., shift_size=3):
         # As the shift become both-side, shift_size needs to be adjusted smaller.
         super().__init__()
         out_features = out_features or in_features
@@ -81,16 +81,9 @@ class shiftmlp(nn.Module):
 
         xn = x.transpose(1, 2).view(B, C, H, W).contiguous()
         xn = F.pad(xn, (self.pad, self.pad, self.pad, self.pad) , "constant", 0)
-        xs = torch.chunk(xn, self.shift_size**2, 1)
-        shift_list = []
-        # Create the shift list for double-shift
-        # e.g. (-2,1) means shift -2 in 2nd dimension and shift 1 on 1st dimension
-        for i in range(-self.pad, self.pad+1):
-            for j in range(-self.pad, self.pad+1):
-                shift_list.append((i,j))
-        # shift on both dimension
-        x_shift = [torch.roll(x_c, shift, (2,3)) for x_c, shift in zip(xs, shift_list)]
-        x_cat = torch.cat(x_shift, 1)
+        xs = torch.chunk(xn, self.shift_size, 2)
+        x_shift = [torch.roll(x_c, shift, 2) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
+        x_cat = torch.cat(x_shift, 2)
         x_cat = torch.narrow(x_cat, 2, self.pad, H)
         x_s = torch.narrow(x_cat, 3, self.pad, W)
         
@@ -108,9 +101,9 @@ class shiftmlp(nn.Module):
 
         xn = x.transpose(1, 2).view(B, C, H, W).contiguous()
         xn = F.pad(xn, (self.pad, self.pad, self.pad, self.pad) , "constant", 0)
-        xs = torch.chunk(xn, self.shift_size**2, 1)
-        x_shift = [torch.roll(x_c, shift, (2,3)) for x_c, shift in zip(xs, shift_list)]
-        x_cat = torch.cat(x_shift, 1)
+        xs = torch.chunk(xn, self.shift_size, 3)
+        x_shift = [torch.roll(x_c, shift, 3) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
+        x_cat = torch.cat(x_shift, 3)
         x_cat = torch.narrow(x_cat, 2, self.pad, H)
         x_s = torch.narrow(x_cat, 3, self.pad, W)
         x_s = x_s.reshape(B,C,H*W).contiguous()
