@@ -208,10 +208,6 @@ def main():
     with open('models/%s/config.yml' % config['name'], 'w') as f:
         yaml.dump(config, f)
 
-    zip_file = zipfile.ZipFile('input.zip')
-    zip_extract = zip_file.extractall()
-    zip_extract.close()
-
     # define loss function (criterion)
     if config['loss'] == 'BCEWithLogitsLoss':
         criterion = nn.BCEWithLogitsLoss().cuda()
