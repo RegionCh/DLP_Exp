@@ -81,9 +81,13 @@ class shiftmlp(nn.Module):
 
         xn = x.transpose(1, 2).view(B, C, H, W).contiguous()
         xn = F.pad(xn, (self.pad, self.pad, self.pad, self.pad) , "constant", 0)
-        xs = torch.chunk(xn, self.shift_size, 2)
-        x_shift = [torch.roll(x_c, shift, 2) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
-        x_cat = torch.cat(x_shift, 2)
+        xs = torch.chunk(xn, self.shift_size, 1)
+        x_cat = []
+        for xss,shift in zip(xs, range(-self.pad, self.pad+1)):
+            xsss = torch.chunk(xss, self.shift_size, 2)
+            x_shift = [torch.roll(x_c, shift, 3) for x_c in xsss]
+            x_cat.append(torch.cat(x_shift,2))
+        x_cat = torch.cat(x_cat, 1)
         x_cat = torch.narrow(x_cat, 2, self.pad, H)
         x_s = torch.narrow(x_cat, 3, self.pad, W)
         
@@ -101,9 +105,13 @@ class shiftmlp(nn.Module):
 
         xn = x.transpose(1, 2).view(B, C, H, W).contiguous()
         xn = F.pad(xn, (self.pad, self.pad, self.pad, self.pad) , "constant", 0)
-        xs = torch.chunk(xn, self.shift_size, 3)
-        x_shift = [torch.roll(x_c, shift, 3) for x_c, shift in zip(xs, range(-self.pad, self.pad+1))]
-        x_cat = torch.cat(x_shift, 3)
+        xs = torch.chunk(xn, self.shift_size, 1)
+        x_cat = []
+        for xss,shift in zip(xs, range(-self.pad, self.pad+1)):
+            xsss = torch.chunk(xss, self.shift_size, 3)
+            x_shift = [torch.roll(x_c, shift, 2) for x_c in xsss]
+            x_cat.append(torch.cat(x_shift,3))
+        x_cat = torch.cat(x_cat, 1)
         x_cat = torch.narrow(x_cat, 2, self.pad, H)
         x_s = torch.narrow(x_cat, 3, self.pad, W)
         x_s = x_s.reshape(B,C,H*W).contiguous()
